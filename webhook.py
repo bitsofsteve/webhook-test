@@ -1,14 +1,18 @@
 from fastapi import FastAPI, Request, HTTPException
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
 # GitHub configurations
-TOKEN = "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"
-OWNER = "bitsofsteve"
-REPO = "webhook-test"
-OPEN_PR_WORKFLOW_ID = "open-pr.yml"
-CLOSE_PR_WORKFLOW_ID = "close-pr.yml"
+TOKEN = os.environ.get("GITHUB_TOKEN")
+OWNER = os.environ.get("GITHUB_OWNER")
+REPO = os.environ.get("GITHUB_REPO")
+OPEN_PR_WORKFLOW_ID =   os.environ.get("OPEN_PR_WORKFLOW_ID")
+CLOSE_PR_WORKFLOW_ID = os.environ.get("CLOSE_PR_WORKFLOW_ID")
 
 @app.post("/webhook")
 async def handle_webhook(request: Request):
@@ -45,19 +49,17 @@ async def trigger_workflow(branch_name, workflow_id):
         "X-GitHub-Api-Version": "2022-11-28"
     }
 
-    url = f"https://api.github.com/repos/{OWNER}/{REPO}/actions/workflows/{workflow_id}/dispatches"
+    url = f"https://api.github.com/repos/{OWNER}/{REPO}/actions/workflows/{OPEN_PR_WORKFLOW_ID }"
 
     data = {
-        "ref": branch_name
+        "ref": "test-pr"
         # "inputs": {
         #     "name": "Mona the Octocat",
         #     "home": "San Francisco, CA"
         # }
     }
-
     response = requests.post(url, headers=headers, json=data)
 
-    print(response)
 
     if response.status_code == 204:
         return {"detail": "Workflow dispatched successfully!"}
