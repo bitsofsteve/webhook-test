@@ -1,4 +1,4 @@
-name: Run on Close PR
+name: Run on Open PR
 on:
   workflow_dispatch:
     inputs:
